@@ -14,6 +14,13 @@ public static class HttpConfiguration
             client.BaseAddress = new Uri(restApiSettings.BaseUrl!);
         });
 
+         services.AddHttpClient<ICategoriesApiClient, CategoriesApiClient>((serviceProvider, client) =>
+        {
+            var restApiSettings = serviceProvider.GetRequiredService<IOptions<RestApiSettings>>().Value;
+
+            client.BaseAddress = new Uri(restApiSettings.BaseUrl!);
+        });
+
         return services;
     }
 }
