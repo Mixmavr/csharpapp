@@ -7,6 +7,10 @@ namespace CSharpApp.Core.Interfaces
 {
     public interface IProductsApiClient
     {
-        Task<IReadOnlyCollection<Product>> GetProducts();
+        Task<IReadOnlyCollection<Product>> GetProducts(CancellationToken cancellationToken);
+
+        Task<Product?> GetProductById(int productId, CancellationToken cancellationToken);
+
+        Task<Product> CreateProduct(CreateProductDto productDto, CancellationToken cancellationToken);
     }
 }
