@@ -1,6 +1,7 @@
 using CSharpApp.Application.Products.Queries;
 using MediatR;
 using CSharpApp.Api.Endpoints;
+using CSharpApp.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,9 @@ builder.Services.AddProblemDetails();
 builder.Services.AddApiVersioning();
 
 var app = builder.Build();
+
+//Performance Middleware
+app.UseMiddleware<RequestPerformanceMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
