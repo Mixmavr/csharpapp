@@ -2,6 +2,8 @@ using CSharpApp.Application.Products.Queries;
 using MediatR;
 using CSharpApp.Api.Endpoints;
 using CSharpApp.Api.Middleware;
+using CSharpApp.Application.Validation;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +15,11 @@ builder.Logging.ClearProviders().AddSerilog(logger);
 builder.Services.AddOpenApi();
 
 builder.Services.AddMediatR(configuration =>
-    configuration.RegisterServicesFromAssemblyContaining<GetProductByIdQueryHandler>());
+{
+    configuration.RegisterServicesFromAssemblyContaining<GetProductByIdQueryHandler>();
+    configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+builder.Services.AddValidatorsFromAssemblyContaining<CreateProductCommandValidator>();
 
 builder.Services.AddDefaultConfiguration();
 builder.Services.AddHttpConfiguration();
@@ -21,6 +27,8 @@ builder.Services.AddProblemDetails();
 builder.Services.AddApiVersioning();
 
 var app = builder.Build();
+
+app.UseMiddleware<ValidationExceptionMiddleware>();
 
 //Performance Middleware
 app.UseMiddleware<RequestPerformanceMiddleware>();

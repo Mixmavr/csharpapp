@@ -15,9 +15,9 @@ namespace CSharpApp.Application.Categories.Commands
             _categoriesApiClient = categoriesApiClient;
         }
 
-        public Task<Category> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<Category> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            return _categoriesApiClient.CreateCategory(request.Category, cancellationToken);
+            return await _categoriesApiClient.CreateCategory(request.Category, cancellationToken);
         }
     }
 }

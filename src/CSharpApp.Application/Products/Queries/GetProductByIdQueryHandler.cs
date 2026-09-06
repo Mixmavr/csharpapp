@@ -15,9 +15,9 @@ namespace CSharpApp.Application.Products.Queries
             _productsApiClient = productsApiClient;
         }
 
-        public Task<Product?> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Product?> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            return _productsApiClient.GetProductById(request.ProductId, cancellationToken);
+            return await _productsApiClient.GetProductById(request.ProductId, cancellationToken);
         }
     }
 }

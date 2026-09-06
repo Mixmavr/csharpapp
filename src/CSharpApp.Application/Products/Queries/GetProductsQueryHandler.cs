@@ -14,10 +14,10 @@ public sealed class GetProductsQueryHandler
         _productsApiClient = productsApiClient;
     }
 
-    public Task<IReadOnlyCollection<Product>> Handle(
+    public async Task<IReadOnlyCollection<Product>> Handle(
         GetProductsQuery request,
         CancellationToken cancellationToken)
     {
-        return _productsApiClient.GetProducts(cancellationToken);
+        return await _productsApiClient.GetProducts(cancellationToken);
     }
 }

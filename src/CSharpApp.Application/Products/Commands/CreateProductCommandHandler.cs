@@ -15,9 +15,9 @@ namespace CSharpApp.Application.Products.Commands
             _productsApiClient = productsApiClient;
         }
 
-        public Task<Product> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<Product> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            return _productsApiClient.CreateProduct(request.Product, cancellationToken);
+            return await _productsApiClient.CreateProduct(request.Product, cancellationToken);
         }
     }
 }

@@ -15,9 +15,9 @@ namespace CSharpApp.Application.Categories.Queries
             _categoriesApiClient = categoriesApiClient;
         }
 
-        public Task<Category?> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Category?> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
-            return _categoriesApiClient.GetCategoryById(request.CategoryId, cancellationToken);
+            return await _categoriesApiClient.GetCategoryById(request.CategoryId, cancellationToken);
         }
     }
 }
