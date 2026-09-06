@@ -9,6 +9,7 @@ namespace CSharpApp.Infrastructure.Authentication
     public sealed class AccessTokenProvider : IAccessTokenProvider
     {
         private readonly IAuthApiClient _authApiClient;
+        private readonly SemaphoreSlim _tokenLock = new(1, 1);
 
         private string? _accessToken;
 
@@ -24,11 +25,25 @@ namespace CSharpApp.Infrastructure.Authentication
                 return _accessToken;
             }
 
-            var authToken = await _authApiClient.Login(cancellationToken);
+            await _tokenLock.WaitAsync(cancellationToken);
 
-            _accessToken = authToken.AccessToken;
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(_accessToken))
+                {
+                    return _accessToken;
+                }
 
-            return _accessToken;
+                var authToken = await _authApiClient.Login(cancellationToken);
+
+                _accessToken = authToken.AccessToken;
+
+                return _accessToken;
+            }
+            finally
+            {
+                _tokenLock.Release();
+            }
         }
     }
 }

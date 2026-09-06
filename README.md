@@ -53,7 +53,7 @@ The application uses a layered architecture with the following responsibilities:
 
 External API calls use typed `HttpClient` instances registered through `IHttpClientFactory`. Products and categories use MediatR handlers and the `IProductsApiClient`/`ICategoriesApiClient` abstractions for outbound communication.
 
-JWT authentication is handled internally when calling the third-party API. The application uses the configured credentials to obtain an access token, caches it in memory, and adds it as a Bearer token to product and category requests. The token is not exposed through a local login endpoint.
+JWT authentication is handled internally when calling the third-party API. The application uses the configured credentials to obtain an access token, caches it in memory, and adds it as a Bearer token to product and category requests. The token cache is thread-safe, preventing duplicate login requests when multiple requests arrive at the same time. The token is not exposed through a local login endpoint.
 
 Create commands are validated before reaching the external API. Product validation checks required values, positive price/category ID, images and HTTP/HTTPS image URLs. Category validation checks the name and image URL. Invalid commands return HTTP 400 validation responses.
 
