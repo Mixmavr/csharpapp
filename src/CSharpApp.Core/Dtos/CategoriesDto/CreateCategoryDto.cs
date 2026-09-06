@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 
 namespace CSharpApp.Core.Dtos.CategoriesDto
 {
-    public sealed class CreateCategoryDto
-    {
-        public required string Name { get; init; }
+   public sealed class CreateCategoryDto
+{
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
 
-        public required string Image { get; init; }
-    }
+    [JsonPropertyName("image")]
+    public required string Image { get; init; }
+}
 }

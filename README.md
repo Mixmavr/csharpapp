@@ -42,11 +42,30 @@ We must measure and log the performance of the requests. Create a middleware to 
 * Using CQRS pattern will be considered as a strong plus.
 * The attached collections (postman/insomnia) will help you with the requests.
 
+## Current implementation
+
+The application uses a layered architecture with the following responsibilities:
+
+* `CSharpApp.Api`: Minimal API endpoints, middleware and request pipeline.
+* `CSharpApp.Application`: CQRS queries, commands, handlers and validation.
+* `CSharpApp.Core`: DTOs, settings and external API contracts.
+* `CSharpApp.Infrastructure`: typed HTTP clients, JWT authentication and HTTP configuration.
+
+External API calls use typed `HttpClient` instances registered through `IHttpClientFactory`. Products and categories use MediatR handlers and the `IProductsApiClient`/`ICategoriesApiClient` abstractions for outbound communication.
+
+JWT authentication is handled internally when calling the third-party API. The application uses the configured credentials to obtain an access token, caches it in memory, and adds it as a Bearer token to product and category requests. The token is not exposed through a local login endpoint.
+
+Create commands are validated before reaching the external API. Product validation checks required values, positive price/category ID, images and HTTP/HTTPS image URLs. Category validation checks the name and image URL. Invalid commands return HTTP 400 validation responses.
+
+Request performance is measured by `RequestPerformanceMiddleware`. Each request logs its method, path, status code and elapsed milliseconds. Requests exceeding `PerformanceSettings:SlowRequestThresholdMilliseconds` are logged as warnings. The default threshold is 500 ms.
+
+Unit tests cover product and category handlers, command validation and access-token caching.
+
 ## How to run
 
 ### Local development
 
-Prerequisites: .NET 9.0 SDK
+Prerequisites: .NET 9 SDK
 
 ```bash
 cd C:\Projects\csharpapp
@@ -57,6 +76,8 @@ dotnet run --project src/CSharpApp.Api/CSharpApp.Api.csproj
 ```
 
 The API runs on `http://localhost:5225`.
+
+The external API base URL and authentication credentials are configured under `RestApiSettings` in `src/CSharpApp.Api/appsettings.json`. For a public repository, use environment variables or user secrets for credentials instead of committing real secrets.
 
 ### Docker
 
@@ -74,6 +95,18 @@ docker run -d -p 8080:8080 csharpapp-api
 
 The API runs on `http://localhost:8080`.
 
+To view container logs:
+
+```bash
+docker logs -f <container_id>
+```
+
+To stop and remove the container:
+
+```bash
+docker rm -f <container_id>
+```
+
 ### Endpoints
 
 Products:
@@ -88,3 +121,8 @@ Categories:
 
 Performance:
 - Request duration and status code are logged to console for each request.
+- Requests slower than the configured threshold are logged as warnings.
+
+### Validation example
+
+Invalid create requests are rejected locally before an external request is sent. For example, a product with an empty title, a non-positive price or an invalid image URL returns HTTP 400.
